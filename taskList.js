@@ -1,11 +1,21 @@
 module.exports = TASKLIST = [
   [
-    "dfsijdsflkjdfa",
-    "fadsknjvafjval",
+    "fga",
     "",
-    true,
+    "не указан",
     false,
-    "123491219",
+    false,
+    "a",
+    false,
+    true
+  ],
+  [
+    "fsa",
+    "",
+    "не указан",
+    false,
+    false,
+    "fsd",
     false
   ]
 ]

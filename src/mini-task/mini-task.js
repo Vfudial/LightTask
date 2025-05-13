@@ -22,6 +22,8 @@ export const TASKPATTERN = (task, index) => `
 						task[5]
 					}</p></div>
           <div id="button-delete" data-index="${index}" data-type="remove"><img src="../../img/delete.png" alt="Удалить" srcset="" data-index="${index}" data-type="remove"></div>
+          <div id="button-complete" data-index="${index}" data-type="complete"><img src="../../img/completed.png" alt="Выполнено" srcset="" data-index="${index}" data-type="complete"></div>
+          
         </div>
       <div id="blur-task-${index}" class="blur-task"> 
       </div>

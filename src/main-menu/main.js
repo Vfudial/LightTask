@@ -122,9 +122,9 @@ function transformFormData(formData) {
 
 	const deadlineTime = formData.get('deadline-time')
 	const deadlineDate = formData.get('deadline-date')
-	let deadline = 'не указан'
-	function isEmpty(data, ifTrue) {
-		return data == '' ? '' : ifTrue
+	let deadline
+	function isEmpty(data, insertDate) {
+		return data == '' ? '' : insertDate
 	}
 	deadline = `${deadlineTime}${isEmpty(deadlineTime, ' ')}${isEmpty(
 		deadlineDate,
@@ -133,7 +133,7 @@ function transformFormData(formData) {
 	return [
 		taskName,
 		formData.get('task-description'),
-		deadline,
+		deadline !== ' ' ? 'не указан' : ' ',
 		formData.get('urgency-select') === 'Срочно',
 		formData.get('importance-select') === 'Важно',
 		category,
