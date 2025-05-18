@@ -1,3 +1,9 @@
 {
-	"cSpell.words": ["CREATEBLOCK", "elems", "fulltask"]
+	"cSpell.words": [
+		"CREATEBLOCK",
+		"elems",
+		"fulltask",
+		"TASKHISTORY",
+		"TASKPATTERN"
+	]
 }

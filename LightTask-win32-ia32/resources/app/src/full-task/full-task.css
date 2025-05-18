@@ -1,0 +1,124 @@
+#fulltask-block {
+	display: flex;
+	width: 53vw;
+	height: 95vh;
+	margin-bottom: 3px;
+	background: rgba(158, 158, 158, 0.38);
+	position: relative;
+}
+.fulltask-head {
+	text-align: center;
+	border: solid 1px black;
+	height: 8%;
+	padding: 2% 5px;
+	background-color: #d9d9d9;
+}
+.fulltask-inside-container {
+	height: 98%;
+	width: 98%;
+	border: solid 1px black;
+	margin: 5px auto 0 auto;
+	padding: 2px;
+	background-color: #808080;
+}
+.fulltask-body {
+	height: 84%;
+	margin: 5px 0;
+	border: solid 1px black;
+	background-color: #d9d9d9;
+	padding: 5px 5px 0 5px;
+	overflow-x: hidden;
+	overflow-y: scroll;
+}
+.fulltask-body p {
+	text-align: justify;
+	max-width: 100%;
+	word-wrap: break-word;
+	max-height: 100%;
+}
+.urgency,
+.importance {
+	color: white;
+	width: 15%;
+	text-align: center;
+	font-size: 0.9rem;
+	padding: 1.5% 0;
+	border: solid 1px black;
+}
+.urgency.high {
+	background-color: red;
+}
+
+.urgency.low {
+	background-color: green;
+}
+
+.importance.high {
+	background-color: red;
+}
+
+.importance.low {
+	background-color: green;
+}
+.fulltask-footer {
+	height: 6%;
+	width: 100%;
+	margin: 0 auto;
+	display: inline-flex;
+	justify-content: space-between;
+	position: relative;
+}
+.fulltask-footer .deadline {
+	padding: 1.5%;
+}
+.fulltask-footer div:first-child {
+	border: solid 1px black;
+	width: 40%;
+	background-color: #d9d9d9;
+	text-align: center;
+	height: 100%;
+	margin: auto 0;
+}
+.fulltask-footer .category {
+	display: inline-block;
+	width: 13%;
+	font-size: 0.9rem;
+	text-align: center;
+	padding: 0 0;
+}
+.fulltask-footer .category p {
+	display: inline-block;
+	width: 90%;
+	height: 50%;
+	background-color: #0f2d69;
+	color: #ffffff;
+	border: solid 1px black;
+	margin-left: 3px;
+	font-size: 0.8rem;
+	padding: 1%;
+}
+.fulltask-footer .category span {
+	display: inline-block;
+	color: #ffffff;
+}
+.fulltask-footer #button-delete {
+	width: 4%;
+	height: 60%;
+	padding: 1% 0;
+	margin: 15px 5px 0 0;
+	background-color: rgb(255, 145, 0);
+	overflow: hidden;
+	position: relative;
+	transition: all 0.5s ease;
+}
+.fulltask-footer #button-delete img {
+	width: 110%;
+	position: absolute;
+	border-radius: 2px;
+	left: -2px;
+	top: -2px;
+}
+.fulltask-footer #button-delete:hover {
+	cursor: pointer;
+	background-color: rgb(199, 113, 0);
+}

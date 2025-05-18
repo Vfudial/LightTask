@@ -15,7 +15,7 @@ let fullTaskId = 0
 
 async function loadTaskList() {
 	try {
-		const filePath = 'taskList.js'
+		const filePath = 'tasklist.json'
 		const taskListData = fs.readFileSync(filePath, 'utf8')
 		TASKLIST = eval(taskListData)
 		console.log('TASKLIST:', TASKLIST)
@@ -27,12 +27,8 @@ async function loadTaskList() {
 
 function saveTaskList() {
 	try {
-		const filePath = 'taskList.js'
-		const data = `module.exports = TASKLIST = ${JSON.stringify(
-			TASKLIST,
-			null,
-			2
-		)}`
+		const filePath = '../../tasklist.json'
+		const data = JSON.stringify(TASKLIST)
 		fs.writeFileSync(filePath, data, 'utf8')
 		console.log('Task list saved successfully')
 	} catch (error) {
@@ -55,7 +51,7 @@ function render() {
 	TASKLIST.forEach(task => {
 		tasks.insertAdjacentHTML('beforeend', taskPattern(task, index))
 		const taskHTMLBlur = document.getElementById(`blur-task-${index}`)
-		task[7] ? blurTask(1, taskHTMLBlur) : blurTask(0, taskHTMLBlur)
+		task[6] ? blurTask(1, taskHTMLBlur) : blurTask(0, taskHTMLBlur)
 		index++
 	})
 	if (TASKLIST.length === 0) {
@@ -93,9 +89,9 @@ function onClickToTasks(event, replaceTarget) {
 		} else {
 			fullTaskId = index
 			for (let i = 0; i < TASKLIST.length; i++) {
-				TASKLIST[i][7] = false
+				TASKLIST[i][6] = false
 			}
-			TASKLIST[index][7] = true
+			TASKLIST[index][6] = true
 		}
 
 		render()
@@ -130,6 +126,7 @@ function transformFormData(formData) {
 		deadlineDate,
 		new Date(deadlineDate).toLocaleDateString()
 	)}`
+
 	return [
 		taskName,
 		formData.get('task-description'),
@@ -137,7 +134,8 @@ function transformFormData(formData) {
 		formData.get('urgency-select') === 'Срочно',
 		formData.get('importance-select') === 'Важно',
 		category,
-		false,
+		false, // Полный вид
+		false, // Завершённость
 	]
 }
 
@@ -146,10 +144,29 @@ function submitCreate(event) {
 	const formData = new FormData(createForm)
 	const newTask = transformFormData(formData)
 	console.log('New Task Data: ', newTask)
-	TASKLIST.push(newTask)
-	displayElem(-1, createBlur, createDisplay)
-	render()
-	saveTaskList()
+	let inTaskList
+	if (TASKLIST.length > 0) {
+		inTaskList = true
+		TASKLIST.forEach(task => {
+			for (let i = 0; i < newTask.length; i++) {
+				if (i !== 6) {
+					if (task[i] !== newTask[i]) {
+						inTaskList = false
+						return
+					}
+				}
+			}
+		})
+	} else inTaskList = false
+	if (!inTaskList) {
+		TASKLIST.push(newTask)
+		displayElem(-1, createBlur, createDisplay)
+		render()
+		saveTaskList()
+	} else {
+		alert('Такая задача уже существует!')
+	}
+
 	createForm.reset()
 }
 
