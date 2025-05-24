@@ -1,10 +1,6 @@
 const fs = require('fs')
-const electron = require('electron')
-const { dialog } = electron
-console.log(dialog)
 import { FULLTASK } from '../full-task/full-task.js'
 import { CREATEBLOCK } from '../create-block/create-block.js'
-import { IMPORTBLOCK } from '../importNexport/import/import.js'
 import { TASKPATTERN as taskPattern } from '../mini-task/mini-task.js'
 
 const filePath = 'tasklist.json'
@@ -244,50 +240,5 @@ const showCreateDisplay = () => {
 	createForm.addEventListener('submit', submitCreate)
 }
 createButton.addEventListener('click', showCreateDisplay)
-
-async function openFile() {
-	const { canceled, filePaths } = await dialog.showOpenDialog({
-		properties: ['openFile'],
-		filters: [{ name: 'All Files', extensions: ['json'] }],
-	})
-
-	if (!canceled && filePaths.length > 0) {
-		const filePath = filePaths[0]
-		fs.readFile(filePath, 'utf8', (err, data) => {
-			if (err) {
-				console.error('Ошибка при чтении файла:', err)
-				alert(`Не удалось прочитать файл: ${err.message}`)
-				return
-			}
-			try {
-				TASKLIST = JSON.parse(data)
-				render()
-			} catch (parseError) {
-				console.error('Ошибка при парсинге JSON:', parseError)
-				alert('Не удалось распарсить JSON')
-			}
-		})
-	}
-}
-async function saveFile() {
-	const { canceled, filePath } = await dialog.showSaveDialog({
-		title: 'Сохранить файл',
-		defaultPath: 'exportedTasks.json',
-		filters: [{ name: 'All Files', extensions: ['json'] }],
-	})
-
-	if (!canceled && filePath) {
-		const dataToExport = JSON.stringify(TASKLIST, null, 2)
-		fs.writeFile(filePath, dataToExport, 'utf8', err => {
-			if (err) {
-				console.error('Ошибка при записи в файл:', err)
-				alert(`Не удалось записать файл: ${err.message}`)
-				return
-			}
-			console.log('Файл успешно сохранен:', filePath)
-			alert('Файл успешно сохранен')
-		})
-	}
-}
 
 loadTaskList()
