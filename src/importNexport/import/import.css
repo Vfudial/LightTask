@@ -1,0 +1,111 @@
+/* CREATE */
+#importBlur {
+	position: fixed;
+	top: 0;
+	left: 0;
+	display: none;
+	z-index: -1;
+	height: 100%;
+	width: 100%;
+	background-color: rgba(0, 0, 0, 0.4);
+	border-radius: 0;
+}
+
+#desk {
+	height: 30vh;
+}
+
+#createForm {
+	height: 80%;
+	width: 50%;
+	position: fixed;
+	display: none;
+	z-index: -1;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background-color: #808080;
+	border: dashed 2px black;
+}
+
+#create-wrapper {
+	padding: 10px;
+}
+#top-desk {
+	height: 20%;
+	width: 100%;
+	display: inline-flex;
+	justify-content: space-around;
+	margin: 0 7px 7px 0;
+}
+
+#top-desk input {
+	width: 80%;
+	padding: 10px;
+}
+
+#createForm textarea {
+	height: 70%;
+	width: 100%;
+	padding: 10px;
+}
+
+#create-datetime-block {
+	height: 35%;
+	width: 100%;
+	display: block;
+}
+
+#datetime-table {
+	width: 100%;
+}
+#datetime-table td input,
+#datetime-table td h5 {
+	height: 5vh;
+	width: 100%;
+}
+#datetime-table td:first-child {
+	padding-bottom: 20px;
+}
+
+#datetime-table td h5 {
+	color: #fff;
+	font-size: 16px;
+	position: relative;
+	top: 20px;
+}
+
+.urg-imp-block {
+	padding-top: 3vh;
+	color: #fff;
+	display: flex;
+	justify-content: space-around;
+	padding-left: 15vw;
+}
+
+.urg-imp-block span {
+	font-size: 16px;
+	padding-top: 1.5vh;
+}
+.urg-imp-block select {
+	height: 5vh;
+	width: 15vw;
+}
+
+#form-submit {
+	padding: 15px 30px;
+	font-size: 16px;
+	background-color: greenyellow;
+}
+
+#escape-button {
+	padding: 15px 30px;
+	font-size: 16px;
+	background-color: rgb(255, 71, 71);
+}
+
+#submit-out-block {
+	padding: 40px 100px;
+	display: flex;
+	justify-content: space-around;
+}

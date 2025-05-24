@@ -1,33 +1,48 @@
 const fs = require('fs')
+const electron = require('electron')
+const { dialog } = electron
+console.log(dialog)
 import { FULLTASK } from '../full-task/full-task.js'
 import { CREATEBLOCK } from '../create-block/create-block.js'
+import { IMPORTBLOCK } from '../importNexport/import/import.js'
 import { TASKPATTERN as taskPattern } from '../mini-task/mini-task.js'
 
+const filePath = 'tasklist.json'
 document.body.insertAdjacentHTML('beforeend', CREATEBLOCK())
+document.body.insertAdjacentHTML('beforeend', IMPORTBLOCK())
 let TASKLIST = []
 let tasks = document.getElementById('tasks')
 const createForm = document.getElementById('createForm')
-const createBlur = document.getElementById('blur')
 const createDisplay = document.getElementById('createForm')
 const createButton = document.getElementById('createButton')
+const importButton = document.getElementById('import-btn')
+const exportButton = document.getElementById('export-btn')
 const fulltaskContainer = document.getElementById('fulltask-container')
 let fullTaskId = 0
+importButton.addEventListener('click', openFile)
+exportButton.addEventListener('click', saveFile)
 
 async function loadTaskList() {
 	try {
-		const filePath = 'tasklist.json'
 		const taskListData = fs.readFileSync(filePath, 'utf8')
 		TASKLIST = eval(taskListData)
 		console.log('TASKLIST:', TASKLIST)
 		render()
+		for (let index = 0; index < TASKLIST.length; index++) {
+			if (TASKLIST[index][6] == true) {
+				selectFullView(index)
+				break
+			}
+		}
 	} catch (error) {
-		console.error('Failed to load task list:', error)
+		// console.error('Failed to load task list:', error)
+		const data = JSON.stringify(TASKLIST)
+		fs.writeFileSync(filePath, data, 'utf8')
 	}
 }
 
 function saveTaskList() {
 	try {
-		const filePath = '../../tasklist.json'
 		const data = JSON.stringify(TASKLIST)
 		fs.writeFileSync(filePath, data, 'utf8')
 		console.log('Task list saved successfully')
@@ -68,6 +83,16 @@ function render() {
 	}
 }
 
+function selectFullView(index) {
+	fullTaskId = index
+	for (let i = 0; i < TASKLIST.length; i++) {
+		TASKLIST[i][6] = false
+	}
+	TASKLIST[index][6] = true
+	console.log(TASKLIST[index][6])
+	saveTaskList()
+	render()
+}
 function onClickToTasks(event, replaceTarget) {
 	const taskContainer = event.target.closest(replaceTarget)
 	if (taskContainer === null) return
@@ -77,24 +102,16 @@ function onClickToTasks(event, replaceTarget) {
 		const type = event.target.dataset.type
 		if (type === 'toggle') {
 			TASKLIST[index].completed = !TASKLIST[index].completed
-			saveTaskList()
 		} else if (type === 'remove') {
 			TASKLIST.splice(index, 1)
-			saveTaskList()
 			if (fullTaskId === index) {
 				fullTaskId = 0
 				render()
 				return
 			}
-		} else {
-			fullTaskId = index
-			for (let i = 0; i < TASKLIST.length; i++) {
-				TASKLIST[i][6] = false
-			}
-			TASKLIST[index][6] = true
-		}
-
+		} else selectFullView(index)
 		render()
+		saveTaskList()
 	}
 }
 tasks.addEventListener('click', event =>
@@ -163,6 +180,7 @@ function submitCreate(event) {
 		displayElem(-1, createBlur, createDisplay)
 		render()
 		saveTaskList()
+		selectFullView(TASKLIST.indexOf(newTask))
 	} else {
 		alert('Такая задача уже существует!')
 	}
@@ -226,5 +244,50 @@ const showCreateDisplay = () => {
 	createForm.addEventListener('submit', submitCreate)
 }
 createButton.addEventListener('click', showCreateDisplay)
+
+async function openFile() {
+	const { canceled, filePaths } = await dialog.showOpenDialog({
+		properties: ['openFile'],
+		filters: [{ name: 'All Files', extensions: ['json'] }],
+	})
+
+	if (!canceled && filePaths.length > 0) {
+		const filePath = filePaths[0]
+		fs.readFile(filePath, 'utf8', (err, data) => {
+			if (err) {
+				console.error('Ошибка при чтении файла:', err)
+				alert(`Не удалось прочитать файл: ${err.message}`)
+				return
+			}
+			try {
+				TASKLIST = JSON.parse(data)
+				render()
+			} catch (parseError) {
+				console.error('Ошибка при парсинге JSON:', parseError)
+				alert('Не удалось распарсить JSON')
+			}
+		})
+	}
+}
+async function saveFile() {
+	const { canceled, filePath } = await dialog.showSaveDialog({
+		title: 'Сохранить файл',
+		defaultPath: 'exportedTasks.json',
+		filters: [{ name: 'All Files', extensions: ['json'] }],
+	})
+
+	if (!canceled && filePath) {
+		const dataToExport = JSON.stringify(TASKLIST, null, 2)
+		fs.writeFile(filePath, dataToExport, 'utf8', err => {
+			if (err) {
+				console.error('Ошибка при записи в файл:', err)
+				alert(`Не удалось записать файл: ${err.message}`)
+				return
+			}
+			console.log('Файл успешно сохранен:', filePath)
+			alert('Файл успешно сохранен')
+		})
+	}
+}
 
 loadTaskList()
