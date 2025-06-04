@@ -5,8 +5,8 @@ export const CREATEBLOCK = () =>
 				<div id="create-wrapper">
 					<div id="desk">
 						<div id="top-desk">
-							<input type="text" placeholder="Название задачи" required />
-							<input type="text" placeholder="Категория" required />
+							<input type="text" name="task-name" placeholder="Название задачи" required />
+							<input type="text" name="task-category" placeholder="Категория" required />
 						</div>
 						<textarea
 							name="task-description"

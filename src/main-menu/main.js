@@ -1,49 +1,97 @@
-const fs = require('fs')
 import { FULLTASK } from '../full-task/full-task.js'
-import { CREATEBLOCK } from '../create-block/create-block.js'
 import { TASKPATTERN as taskPattern } from '../mini-task/mini-task.js'
+import { CREATEBLOCK } from '../create-block/create-block.js'
 
-const filePath = 'tasklist.json'
-document.body.insertAdjacentHTML('beforeend', CREATEBLOCK())
-document.body.insertAdjacentHTML('beforeend', IMPORTBLOCK())
+document.body.insertAdjacentHTML('beforeend', CREATEBLOCK)
 let TASKLIST = []
 let tasks = document.getElementById('tasks')
-const createForm = document.getElementById('createForm')
+const createBlur = document.getElementById('blur')
 const createDisplay = document.getElementById('createForm')
 const createButton = document.getElementById('createButton')
 const importButton = document.getElementById('import-btn')
 const exportButton = document.getElementById('export-btn')
 const fulltaskContainer = document.getElementById('fulltask-container')
 let fullTaskId = 0
+
+// Обработчики событий
 importButton.addEventListener('click', openFile)
 exportButton.addEventListener('click', saveFile)
+tasks.addEventListener('click', event =>
+	onClickToTasks(event, '.task-container')
+)
+fulltaskContainer.addEventListener('click', event =>
+	onClickToTasks(event, '#fulltask-block')
+)
 
-async function loadTaskList() {
+// Асинхронная функция загрузки списка задач
+async function loadAndRenderTaskList() {
 	try {
-		const taskListData = fs.readFileSync(filePath, 'utf8')
-		TASKLIST = eval(taskListData)
-		console.log('TASKLIST:', TASKLIST)
+		const taskList = await window.electronAPI.loadTaskList()
+		TASKLIST = taskList
 		render()
 		for (let index = 0; index < TASKLIST.length; index++) {
-			if (TASKLIST[index][6] == true) {
+			if (TASKLIST[index][6] === true) {
 				selectFullView(index)
 				break
 			}
 		}
 	} catch (error) {
-		// console.error('Failed to load task list:', error)
-		const data = JSON.stringify(TASKLIST)
-		fs.writeFileSync(filePath, data, 'utf8')
+		console.error('Ошибка при загрузке списка задач:', error)
+		window.electronAPI.showError(
+			'Ошибка загрузки списка задач: ' + error.message
+		) // Отправляем сообщение об ошибке
 	}
 }
 
-function saveTaskList() {
+// Асинхронная функция сохранения списка задач
+async function saveTaskList() {
 	try {
-		const data = JSON.stringify(TASKLIST)
-		fs.writeFileSync(filePath, data, 'utf8')
-		console.log('Task list saved successfully')
+		const success = await window.electronAPI.saveTaskList(TASKLIST)
+		if (!success) {
+			console.error('Ошибка сохранения списка задач!')
+			// Обработка ошибки: можно отобразить сообщение об ошибке пользователю
+		}
 	} catch (error) {
-		console.error('Failed to save task list:', error)
+		console.error('Ошибка сохранения списка задач:', error)
+		// Обработка ошибки: можно отобразить сообщение об ошибке пользователю
+	}
+}
+
+// Функция открытия файла
+async function openFile() {
+	try {
+		const loadedTasks = await window.electronAPI.openFile()
+		if (loadedTasks !== null) {
+			// Проверка на null
+			TASKLIST = loadedTasks
+			saveTaskList()
+			render()
+		} else {
+			// Обработка ошибки (файл не выбран или ошибка при загрузке)
+			console.log('File load canceled.')
+		}
+	} catch (error) {
+		console.error('Общая ошибка при открытии файла:', error)
+		window.electronAPI.showError('Неизвестная ошибка при открытии файла.')
+	}
+}
+
+// Функция сохранения файла
+async function saveFile() {
+	try {
+		const data = JSON.stringify(TASKLIST) // Преобразуем данные в JSON
+		const result = await window.electronAPI.saveFile(data)
+		if (result && result.filePath) {
+			console.log('File saved to:', result.filePath)
+		} else if (result && result.error) {
+			console.error('Error:', result.error)
+			// Обработка ошибки: можно отобразить сообщение об ошибке пользователю
+		} else {
+			console.log('File save canceled.')
+		}
+	} catch (error) {
+		console.error('Failed to save file:', error)
+		// Обработка ошибки: можно отобразить сообщение об ошибке пользователю
 	}
 }
 
@@ -70,26 +118,42 @@ function render() {
 			'afterbegin',
 			'<p id="empty-tasks">Задачи отсутствуют</p>'
 		)
+		if (fullTaskId == -1) {
+			fulltaskContainer.innerHTML = ''
+		}
 	} else {
 		fulltaskContainer.innerHTML = ''
-		fulltaskContainer.insertAdjacentHTML(
-			'afterbegin',
-			FULLTASK(TASKLIST[fullTaskId], fullTaskId)
-		)
+		if (TASKLIST[fullTaskId] !== undefined) {
+			fulltaskContainer.insertAdjacentHTML(
+				'afterbegin',
+				FULLTASK(TASKLIST[fullTaskId], fullTaskId)
+			)
+		} else {
+			for (let index = 0; index < TASKLIST.length; index++) {
+				if (TASKLIST[fullTaskId] !== undefined) {
+					fulltaskContainer.insertAdjacentHTML(
+						'afterbegin',
+						FULLTASK(TASKLIST[index], index)
+					)
+				}
+			}
+		}
 	}
 }
 
 function selectFullView(index) {
-	fullTaskId = index
-	for (let i = 0; i < TASKLIST.length; i++) {
-		TASKLIST[i][6] = false
+	if (TASKLIST.length > 0) {
+		fullTaskId = index
+		for (let i = 0; i < TASKLIST.length; i++) {
+			TASKLIST[i][6] = false
+		}
+		TASKLIST[index][6] = true
+		saveTaskList()
 	}
-	TASKLIST[index][6] = true
-	console.log(TASKLIST[index][6])
-	saveTaskList()
 	render()
 }
 function onClickToTasks(event, replaceTarget) {
+	console.log('onClickToTasks')
 	const taskContainer = event.target.closest(replaceTarget)
 	if (taskContainer === null) return
 	const stringIndex = taskContainer.dataset.index
@@ -99,54 +163,39 @@ function onClickToTasks(event, replaceTarget) {
 		if (type === 'toggle') {
 			TASKLIST[index].completed = !TASKLIST[index].completed
 		} else if (type === 'remove') {
+			console.log('remove ' + index)
 			TASKLIST.splice(index, 1)
 			if (fullTaskId === index) {
+				if (TASKLIST.length === 0) {
+					fullTaskId = -1
+					render()
+					return
+				}
 				fullTaskId = 0
-				render()
-				return
 			}
 		} else selectFullView(index)
 		render()
 		saveTaskList()
 	}
 }
-tasks.addEventListener('click', event =>
-	onClickToTasks(event, '.task-container')
-)
-fulltaskContainer.addEventListener('click', event =>
-	onClickToTasks(event, '#fulltask-block')
-)
-
-function getTaskName() {
-	return document.querySelector('input[placeholder="Название задачи"]').value
-}
-
-function getCategory() {
-	return document.querySelector('input[placeholder="Категория"]').value
-}
-
 function transformFormData(formData) {
-	let taskName = getTaskName()
-	let category = getCategory()
-
 	const deadlineTime = formData.get('deadline-time')
 	const deadlineDate = formData.get('deadline-date')
-	let deadline
 	function isEmpty(data, insertDate) {
 		return data == '' ? '' : insertDate
 	}
-	deadline = `${deadlineTime}${isEmpty(deadlineTime, ' ')}${isEmpty(
+	let deadline = `${deadlineTime}${isEmpty(deadlineTime, ' ')}${isEmpty(
 		deadlineDate,
 		new Date(deadlineDate).toLocaleDateString()
 	)}`
 
 	return [
-		taskName,
+		formData.get('task-name'),
 		formData.get('task-description'),
-		deadline !== ' ' ? 'не указан' : ' ',
+		deadline === ' ' ? 'не указан' : deadline,
 		formData.get('urgency-select') === 'Срочно',
 		formData.get('importance-select') === 'Важно',
-		category,
+		formData.get('task-category'),
 		false, // Полный вид
 		false, // Завершённость
 	]
@@ -154,7 +203,7 @@ function transformFormData(formData) {
 
 function submitCreate(event) {
 	event.preventDefault()
-	const formData = new FormData(createForm)
+	const formData = new FormData(createDisplay)
 	const newTask = transformFormData(formData)
 	console.log('New Task Data: ', newTask)
 	let inTaskList
@@ -241,4 +290,4 @@ const showCreateDisplay = () => {
 }
 createButton.addEventListener('click', showCreateDisplay)
 
-loadTaskList()
+loadAndRenderTaskList()
