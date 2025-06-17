@@ -108,3 +108,7 @@ main #tasks #empty-tasks {
 	z-index: 2;
 	bottom: 0px;
 }
+
+#filter-menu {
+	position: absolute;
+}

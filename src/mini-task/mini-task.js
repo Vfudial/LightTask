@@ -28,3 +28,13 @@ export const TASKPATTERN = (task, index) => `
       </div>
     </div>
   `
+
+export const blurTask = (number, elem) => {
+	if (number === 1) {
+		elem.style.zIndex = 1
+		elem.style.visibility = 'visible'
+		return
+	}
+	elem.style.zIndex = -1
+	elem.style.visibility = 'hidden'
+}

@@ -109,3 +109,8 @@
 	display: flex;
 	justify-content: space-around;
 }
+input[required],
+select[required] {
+	border-left: 2px solid #ff5252;
+	border-right: 2px solid #ff5252;
+}

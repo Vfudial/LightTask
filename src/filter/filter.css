@@ -1,0 +1,34 @@
+#filter-menu {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background: white;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+	z-index: 1000;
+	width: 300px;
+}
+
+.filter-options {
+	max-height: 300px;
+	overflow-y: auto;
+	margin: 15px 0;
+}
+
+.filter-option {
+	display: flex;
+	align-items: center;
+	margin: 5px 0;
+}
+
+.filter-buttons {
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+}
+
+.hidden {
+	display: none;
+}
