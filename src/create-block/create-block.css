@@ -8,109 +8,198 @@
 	height: 100%;
 	width: 100%;
 	background-color: rgba(0, 0, 0, 0.4);
-	border-radius: 0;
-}
-
-#desk {
-	height: 30vh;
 }
 
 #createForm {
-	height: 80%;
-	width: 50%;
 	position: fixed;
-	display: none;
-	z-index: -1;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
+	width: 50%;
 	background-color: #808080;
 	border: dashed 2px black;
+	padding: 20px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+	opacity: 0;
+	z-index: -1;
+}
+
+#createForm:not([style*='none']) {
+	animation: fadeIn 0.4s ease-out forwards;
+	z-index: 1000;
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translate(-50%, -55%);
+	}
+	to {
+		opacity: 1;
+		transform: translate(-50%, -50%);
+	}
 }
 
 #create-wrapper {
 	padding: 10px;
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
 }
+
+/* Desk Section */
+#desk {
+	height: 30vh;
+	display: flex;
+	flex-direction: column;
+	gap: 15px;
+}
+
 #top-desk {
-	height: 20%;
-	width: 100%;
-	display: inline-flex;
-	justify-content: space-around;
-	margin: 0 7px 7px 0;
+	display: flex;
+	gap: 15px;
 }
 
 #top-desk input {
-	width: 80%;
-	padding: 10px;
+	flex: 1;
+	width: 90%;
+	padding: 12px;
+	font-size: 16px;
+	background-color: rgba(255, 255, 255, 0.8);
+	border: none;
+	transition: all 0.3s;
 }
 
-#createForm textarea {
-	height: 70%;
-	width: 100%;
-	padding: 10px;
+#top-desk input:hover {
+	background-color: white;
+	box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
 }
 
-#create-datetime-block {
-	height: 35%;
-	width: 100%;
-	display: block;
+#task-description {
+	flex: 1;
+	padding: 12px;
+	font-size: 16px;
+	resize: none;
+	background-color: rgba(255, 255, 255, 0.8);
+	border: none;
+	transition: all 0.3s;
+}
+
+#task-description:hover {
+	background-color: white;
+	box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+}
+
+/* DateTime Block */
+.datetime-block {
+	background-color: rgba(255, 255, 255, 0.1);
+	padding: 15px;
 }
 
 #datetime-table {
 	width: 100%;
+	border-collapse: separate;
+	border-spacing: 0 10px;
 }
-#datetime-table td input,
-#datetime-table td h5 {
-	height: 5vh;
-	width: 100%;
+
+#datetime-table td {
+	padding: 5px 0;
 }
+
 #datetime-table td:first-child {
-	padding-bottom: 20px;
+	width: 25%;
 }
 
-#datetime-table td h5 {
+#datetime-table input {
+	width: 100%;
+	padding: 8px;
+	background-color: rgba(255, 255, 255, 0.8);
+	border: none;
+}
+
+#datetime-table input:hover {
+	background-color: white;
+}
+
+#datetime-table h5 {
 	color: #fff;
 	font-size: 16px;
-	position: relative;
-	top: 20px;
+	margin: 0;
+	font-weight: normal;
 }
 
+/* Urgency/Importance Block */
 .urg-imp-block {
-	padding-top: 3vh;
-	color: #fff;
 	display: flex;
-	justify-content: space-around;
-	padding-left: 15vw;
+	justify-content: center;
+	gap: 30px;
+	padding: 15px 0;
 }
 
-.urg-imp-block span {
-	font-size: 16px;
-	padding-top: 1.5vh;
-}
 .urg-imp-block select {
-	height: 5vh;
-	width: 15vw;
+	padding: 10px 15px;
+	font-size: 16px;
+	background-color: rgba(255, 255, 255, 0.8);
+	border: none;
+	cursor: pointer;
+	transition: all 0.3s;
+}
+
+.urg-imp-block select:hover {
+	background-color: white;
+	box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Buttons */
+#submit-out-block {
+	display: flex;
+	justify-content: center;
+	gap: 30px;
+	padding-top: 20px;
+}
+
+#form-submit,
+#escape-button {
+	padding: 12px 30px;
+	font-size: 16px;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	transition: all 0.3s;
 }
 
 #form-submit {
-	padding: 15px 30px;
-	font-size: 16px;
 	background-color: greenyellow;
 }
 
-#escape-button {
-	padding: 15px 30px;
-	font-size: 16px;
-	background-color: rgb(255, 71, 71);
+#form-submit:hover {
+	background-color: #a2ff00;
+	transform: translateY(-2px);
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-#submit-out-block {
-	padding: 40px 100px;
-	display: flex;
-	justify-content: space-around;
+#escape-button {
+	background-color: #ff4747;
+	color: white;
 }
+
+#escape-button:hover {
+	background-color: #e63939;
+	transform: translateY(-2px);
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Validation */
 input[required],
-select[required] {
+select[required],
+textarea[required] {
 	border-left: 2px solid #ff5252;
 	border-right: 2px solid #ff5252;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+	outline: 2px solid #4caf50;
+	background-color: white !important;
 }
