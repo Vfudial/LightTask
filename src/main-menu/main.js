@@ -5,6 +5,7 @@ import {
 	CREATEBLOCK,
 	showCreateDisplay,
 	displayElem,
+	showEditDisplay,
 } from '../create-block/create-block.js'
 
 document.body.insertAdjacentHTML('beforeend', CREATEBLOCK)
@@ -24,9 +25,13 @@ function initEventListeners() {
 	tasks.addEventListener('click', event =>
 		onClickToTasks(event, '.task-container')
 	)
+	tasks.addEventListener('dblclick', event =>
+		onDoubleClickToTasks(event, '.task-container')
+	)
 	fulltaskContainer.addEventListener('click', event =>
 		onClickToTasks(event, '#fulltask-block')
 	)
+	createButton.addEventListener('click', () => showCreateDisplay(TASKLIST))
 }
 initEventListeners()
 
@@ -105,7 +110,6 @@ function render() {
 		if (taskHTMLBlur) {
 			task[6] ? blurTask(1, taskHTMLBlur) : blurTask(0, taskHTMLBlur)
 		}
-
 		index++
 	})
 
@@ -134,6 +138,7 @@ function render() {
 			}
 		}
 	}
+	if (window.updateFilters) window.updateFilters()
 }
 
 function selectFullView(index) {
@@ -156,7 +161,30 @@ function selectFullView(index) {
 	}
 }
 
+let clickTimeout = null
+
 function onClickToTasks(event, replaceTarget) {
+	if (clickTimeout !== null) {
+		clearTimeout(clickTimeout)
+		clickTimeout = null
+		return
+	}
+
+	clickTimeout = setTimeout(() => {
+		clickTimeout = null
+		handleSingleClick(event, replaceTarget)
+	}, 200)
+}
+
+function onDoubleClickToTasks(event, replaceTarget) {
+	if (clickTimeout !== null) {
+		clearTimeout(clickTimeout)
+		clickTimeout = null
+	}
+	handleDoubleClick(event, replaceTarget)
+}
+
+function handleSingleClick(event, replaceTarget) {
 	const taskContainer = event.target.closest(replaceTarget)
 	if (!taskContainer) return
 
@@ -180,16 +208,28 @@ function onClickToTasks(event, replaceTarget) {
 	} else {
 		selectFullView(index)
 	}
-
 	render()
 	saveTaskList()
+}
+
+function handleDoubleClick(event, replaceTarget) {
+	const taskContainer = event.target.closest(replaceTarget)
+	if (!taskContainer) return
+
+	const stringIndex = taskContainer.dataset.index
+	if (!stringIndex) return
+
+	const index = parseInt(stringIndex)
+	if (index < 0 || index >= TASKLIST.length) return
+
+	showEditDisplay(TASKLIST[index], index)
 }
 
 createButton.addEventListener('click', (event, TASKLIST) => {
 	showCreateDisplay(event, TASKLIST)
 })
 
-export const checkNPushNewTask = newTask => {
+const checkNPushNewTask = newTask => {
 	if (!newTask || newTask.length === 0 || !newTask[0]?.trim()) {
 		console.warn('Попытка добавить пустую задачу')
 		return
@@ -217,29 +257,76 @@ export const checkNPushNewTask = newTask => {
 		render()
 		saveTaskList()
 		selectFullView(TASKLIST.length - 1)
-
-		if (filterMenu && !filterMenu.classList.contains('hidden'))
-			setupFilterMenu()
 	} else {
 		alert('Такая задача уже существует!')
 	}
 }
+function replaceTask(newTask, index) {
+	if (newTask === undefined || newTask === null) {
+		console.error('Задача не определена!')
+		return false
+	}
+
+	if (index < 0 || index >= TASKLIST.length) {
+		console.error('Ошибка в индексе!', index)
+		return false
+	}
+
+	const isDuplicate = TASKLIST.some((task, i) => {
+		if (i === index) return false
+
+		let matchCount = 0
+		for (let i = 0; i < Math.min(task.length, newTask.length); i++) {
+			if (i !== 6 && i !== 7) {
+				if (String(task[i]).trim() === String(newTask[i]).trim()) matchCount++
+			}
+		}
+		return matchCount >= newTask.length - 2
+	})
+
+	if (isDuplicate) {
+		alert('Такая задача уже существует!')
+		return false
+	}
+
+	newTask[6] = TASKLIST[index][6] // fullview
+	newTask[7] = TASKLIST[index][7] // completed
+
+	TASKLIST[index] = newTask
+
+	displayElem(-1)
+	render()
+	saveTaskList()
+
+	const oldCategory = TASKLIST[index][5]
+	const newCategory = newTask[5]
+	const needUpdateFilters = oldCategory !== newCategory
+	return true
+}
 
 function toggleFilterMenu() {
 	if (!filterMenu) {
-		document.body.insertAdjacentHTML('beforeend', FILTER_MENU())
-		filterMenu = document.getElementById('filter-menu')
-		setupFilterMenu()
+		createFilterMenu()
+	} else {
+		updateFilterOptions()
 	}
-
 	filterMenu.classList.toggle('hidden')
 }
-
-function setupFilterMenu() {
-	const filterOptions = document.getElementById('filter-options')
+function createFilterMenu() {
+	document.body.insertAdjacentHTML('beforeend', FILTER_MENU())
+	filterMenu = document.getElementById('filter-menu')
 	const applyBtn = document.getElementById('apply-filter')
 	const cancelBtn = document.getElementById('cancel-filter')
 
+	applyBtn.addEventListener('click', applyFilter)
+	cancelBtn.addEventListener('click', cancelFilter)
+
+	updateFilterOptions()
+}
+function updateFilterOptions() {
+	if (!filterMenu) return
+
+	const filterOptions = document.getElementById('filter-options')
 	const allCategories = [
 		...new Set(TASKLIST.flatMap(task => (task[5] ? [task[5]] : []))),
 	]
@@ -247,29 +334,43 @@ function setupFilterMenu() {
 	filterOptions.innerHTML = allCategories
 		.map(
 			category => `
-    <div class="filter-option">
-      <input type="checkbox" id="filter-${category}" value="${category}"
-        ${currentFilter.includes(category) ? 'checked' : ''}>
-      <label for="filter-${category}">${category}</label>
-    </div>
-  `
+			<div class="filter-option">
+					<input type="checkbox" id="filter-${category}" value="${category}"
+							${currentFilter.includes(category) ? 'checked' : ''}>
+					<label for="filter-${category}">${category}</label>
+			</div>
+	`
 		)
 		.join('')
+}
+function applyFilter() {
+	const filterOptions = document.getElementById('filter-options')
+	const checkboxes = filterOptions.querySelectorAll(
+		'input[type="checkbox"]:checked'
+	)
 
-	applyBtn.onclick = () => {
-		const checkboxes = filterOptions.querySelectorAll(
-			'input[type="checkbox"]:checked'
-		)
-		currentFilter = Array.from(checkboxes).map(cb => cb.value)
-		render()
-		filterMenu.classList.add('hidden')
-	}
-	cancelBtn.onclick = () => {
-		filterMenu.classList.add('hidden')
+	currentFilter = Array.from(checkboxes).map(cb => cb.value)
+	render()
+	filterMenu.classList.add('hidden')
+}
+
+function cancelFilter() {
+	filterMenu.classList.add('hidden')
+}
+
+filterButton.addEventListener('click', toggleFilterMenu)
+window.updateFilters = function () {
+	if (filterMenu && !filterMenu.classList.contains('hidden')) {
+		updateFilterOptions()
 	}
 }
-filterButton.addEventListener('click', toggleFilterMenu)
 
 loadAndRenderTaskList()
 
-export { loadAndRenderTaskList, displayElem, initEventListeners }
+export {
+	replaceTask,
+	checkNPushNewTask,
+	loadAndRenderTaskList,
+	displayElem,
+	initEventListeners,
+}

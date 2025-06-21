@@ -11,14 +11,15 @@ const filePath = path.join(app.getPath('userData'), 'tasklist.json')
 const createWindow = () => {
 	const mainWindow = new BrowserWindow({
 		width: 800,
-		height: 600,
+		height: 720,
+		minWidth: 800,
+		minHeight: 720,
 		webPreferences: {
 			preload: path.join(__dirname, 'preload.js'),
 			nodeIntegration: false,
 			contextIsolation: true,
 		},
 	})
-
 	mainWindow.loadFile(path.join(__dirname, 'main-menu/index.html'))
 
 	mainWindow.webContents.openDevTools()
@@ -35,19 +36,19 @@ async function loadTaskList() {
 			return []
 		} else {
 			console.error('Ошибка загрузки списка задач:', error)
-			return [] // Не используйте alert здесь, это процесс главного потока
+			return []
 		}
 	}
 }
 
 async function saveTaskList(taskList) {
 	try {
-		await fs.promises.writeFile(filePath, JSON.stringify(taskList)) // Используем JSON.stringify
+		await fs.promises.writeFile(filePath, JSON.stringify(taskList))
 		console.log('Task list saved successfully')
-		return true // Indicate success
+		return true
 	} catch (error) {
 		console.error('Failed to save task list:', error)
-		return false // Indicate failure
+		return false
 	}
 }
 
@@ -55,7 +56,7 @@ async function saveTaskList(taskList) {
 async function openFile(browserWindow) {
 	const options = {
 		properties: ['openFile'],
-		filters: [{ name: 'JSON Files', extensions: ['json'] }], // Добавлен фильтр для JSON файлов
+		filters: [{ name: 'JSON Files', extensions: ['json'] }],
 	}
 
 	const result = await dialog.showOpenDialog(browserWindow, options)
@@ -70,13 +71,13 @@ async function openFile(browserWindow) {
 			return loadedTasks
 		} catch (error) {
 			console.error('Ошибка при открытии файла:', error)
-			dialog.showErrorBox('Ошибка при открытии файла', error.message) // Используем dialog.showErrorBox
-			return null // Возвращаем null, если произошла ошибка
+			dialog.showErrorBox('Ошибка при открытии файла', error.message)
+			return null
 		}
 	}
-	return null // Возвращаем null, если диалог был отменен
+	return null
 }
-// Функция сохранения файла
+
 async function saveFile(browserWindow, data) {
 	try {
 		const result = await dialog.showSaveDialog(browserWindow, {
@@ -98,7 +99,7 @@ async function saveFile(browserWindow, data) {
 		}
 	} catch (error) {
 		console.error('Ошибка при открытии диалога сохранения:', error)
-		alert('Ошибка записи на файл! Пожалуйста, попробуйте снова.') // Отображаем сообщение об ошибке
+		alert('Ошибка записи на файл! Пожалуйста, попробуйте снова.')
 		return { error: 'Ошибка при сохранении файла', details: error }
 	}
 }
@@ -106,7 +107,6 @@ async function saveFile(browserWindow, data) {
 app.whenReady().then(() => {
 	createWindow()
 
-	// Обработчики IPC для операций с файлами
 	ipcMain.handle('load-task-list', async () => {
 		return loadTaskList()
 	})
@@ -126,7 +126,7 @@ app.whenReady().then(() => {
 	})
 
 	ipcMain.handle('show-error', (event, message) => {
-		dialog.showErrorBox('Ошибка', message) // Используем dialog.showErrorBox вместо alert
+		dialog.showErrorBox('Ошибка', message)
 	})
 
 	app.on('activate', () => {
