@@ -1,267 +1,168 @@
-import { checkNPushNewTask, replaceTask } from '../main-menu/main.js'
-
+import { escapeHtml } from '../mini-task/mini-task.js';
+import { checkNPushNewTask } from '../main-menu/main.js'
 export const CREATEBLOCK = (taskToEdit = -1) => {
-	const isEditMode = taskToEdit !== -1 && Array.isArray(taskToEdit)
+    const isEditMode = Array.isArray(taskToEdit);
+    const getValue = (index, def = '') => isEditMode ? taskToEdit[index] || def : def;
 
-	// Безопасное извлечение значений с проверкой типа
-	const getSafeValue = (index, defaultValue = '') => {
-		if (!isEditMode) return defaultValue
-		const value = taskToEdit[index]
-		return value !== undefined && value !== null ? value : defaultValue
-	}
-
-	const taskName = getSafeValue(0, '')
-	const taskDescription = getSafeValue(1, '').replace(/<br>/g, '\n')
-	const taskCategory = getSafeValue(5, '')
-	const deadlineTime = getSafeValue(8, '')
-	const deadlineDate = getSafeValue(9, '')
-	const endTime = getSafeValue(10, '')
-	const endDate = getSafeValue(11, '')
-	const urgencyValue = getSafeValue(3, false) ? 'Срочно' : 'Не срочно'
-	const importanceValue = getSafeValue(4, false) ? 'Важно' : 'Не важно'
-
-	return `
+    return `
     <div id="blur">
         <form id="createForm">
             <div id="create-wrapper">
                 <div id="desk">
                     <div id="top-desk">
                         <input type="text" name="task-name" placeholder="Название задачи" 
-                            value="${escapeHtml(taskName)}" required />
+                            value="${escapeHtml(getValue(0))}" required>
                         <input type="text" name="task-category" placeholder="Категория" 
-                            value="${escapeHtml(taskCategory)}" required />
+                            value="${escapeHtml(getValue(5))}" required>
                     </div>
-                    <textarea
-                        name="task-description"
-                        id="task-description"
-                        placeholder="Описание задачи"
-                    >${escapeHtml(taskDescription)}</textarea>
+                    <textarea name="task-description" id="task-description" placeholder="Описание задачи"
+                        >${escapeHtml(getValue(1))}</textarea>
                 </div>
 
                 <div class="datetime-block">
                     <table id="datetime-table">
                         <tr>
                             <td><h5>Дедлайн:</h5></td>
-                            <td>
-                                <input type="time" name="deadline-time" id="deadline-time" value="${deadlineTime}"/>
-                            </td>
-                            <td>
-                                <input type="date" name="deadline-date" id="deadline-date" value="${deadlineDate}"/>
-                            </td>
+                            <td><input type="time" name="deadline-time" value="${getValue(8)}"></td>
+                            <td><input type="date" name="deadline-date" value="${getValue(9)}"></td>
                         </tr>
                         <tr>
                             <td><h5>Сроки:</h5></td>
-                            <td>
-                                <input type="time" name="start-time" id="start-time" value="${getSafeValue(
-																	12,
-																	''
-																)}"/>
-                            </td>
-                            <td>
-                                <input type="date" name="start-date" id="start-date" value="${getSafeValue(
-																	13,
-																	''
-																)}"/>
-                            </td>
+                            <td><input type="time" name="start-time" value="${getValue(12)}"></td>
+                            <td><input type="date" name="start-date" value="${getValue(13)}"></td>
                         </tr>
                         <tr>
                             <td></td>
-                            <td>
-                                <input type="time" name="end-time" id="end-time" value="${endTime}"/>
-                            </td>
-                            <td>
-                                <input type="date" name="end-date" id="end-date" value="${endDate}"/>
-                            </td>
+                            <td><input type="time" name="end-time" value="${getValue(10)}"></td>
+                            <td><input type="date" name="end-date" value="${getValue(11)}"></td>
                         </tr>
                     </table>
                 </div>
 
                 <div class="urg-imp-block">
                     <select name="urgency-select" id="urgency-select">
-                        <option value="Не срочно" ${
-													urgencyValue === 'Не срочно' ? 'selected' : ''
-												}>Не срочно</option>
-                        <option value="Срочно" ${
-													urgencyValue === 'Срочно' ? 'selected' : ''
-												}>Срочно</option>
+                        <option value="Не срочно" ${getValue(3, false) ? '' : 'selected'}>Не срочно</option>
+                        <option value="Срочно" ${getValue(3, false) ? 'selected' : ''}>Срочно</option>
                     </select>
-
                     <select name="importance-select" id="importance-select">
-                        <option value="Не важно" ${
-													importanceValue === 'Не важно' ? 'selected' : ''
-												}>Не важно</option>
-                        <option value="Важно" ${
-													importanceValue === 'Важно' ? 'selected' : ''
-												}>Важно</option>
+                        <option value="Не важно" ${getValue(4, false) ? '' : 'selected'}>Не важно</option>
+                        <option value="Важно" ${getValue(4, false) ? 'selected' : ''}>Важно</option>
                     </select>
                 </div>
             </div>
             <div id="submit-out-block">
-                <input id="form-submit" type="submit" value="Подтвердить" />
+                <input id="form-submit" type="submit" value="${isEditMode ? 'Обновить' : 'Создать'}">
                 <button id="escape-button" type="button">Отмена</button>
             </div>
         </form>
-    </div>
-    `
-}
-
-// Вспомогательная функция для экранирования HTML
-function escapeHtml(unsafe) {
-	if (typeof unsafe !== 'string') return unsafe
-	return unsafe
-		.replace(/&/g, '&amp;')
-		.replace(/</g, '&lt;')
-		.replace(/>/g, '&gt;')
-		.replace(/"/g, '&quot;')
-		.replace(/'/g, '&#039;')
-}
-
-function transformFormData(formData) {
-	const deadlineTime = formData.get('deadline-time') || ''
-	const deadlineDate = formData.get('deadline-date') || ''
-	const startTime = formData.get('start-time') || ''
-	const startDate = formData.get('start-date') || ''
-	const endTime = formData.get('end-time') || ''
-	const endDate = formData.get('end-date') || ''
-
-	const formatDate = (time, date) => {
-		if (!time && !date) return 'не указан'
-		const timePart = time ? time : ''
-		const datePart = date ? new Date(date).toLocaleDateString() : ''
-		return [timePart, datePart].filter(Boolean).join(' ')
-	}
-
-	return [
-		formData.get('task-name') || 'Без названия',
-		(formData.get('task-description') || '').replace(/\r?\n/g, '<br>'),
-		formatDate(deadlineTime, deadlineDate),
-		formData.get('urgency-select') === 'Срочно',
-		formData.get('importance-select') === 'Важно',
-		formData.get('task-category') || 'Без категории',
-		false, // Полный вид
-		false, // Завершённость
-		deadlineTime,
-		deadlineDate,
-		endTime,
-		endDate,
-		startTime,
-		startDate,
-	]
-}
+    </div>`;
+};
 
 export const displayElem = number => {
-	const elems = [
-		document.getElementById('blur'),
-		document.getElementById('createForm'),
-	].filter(Boolean)
+    const elems = [document.getElementById('blur'), document.getElementById('createForm')].filter(Boolean);
+    elems.forEach(elem => {
+        elem.style.display = number === 1 ? 'block' : 'none';
+        elem.style.zIndex = number === 1 ? '1000' : '-1';
+    });
+};
 
-	if (elems.length === 0) return
+export const showCreateDisplay = (TASKLIST) => {
+    const oldBlur = document.getElementById('blur');
+    if (oldBlur) oldBlur.remove();
 
-	elems.forEach(elem => {
-		elem.style.display = number === 1 ? 'block' : 'none'
-		elem.style.zIndex = number === 1 ? '1' : '-1'
-	})
-}
+    document.body.insertAdjacentHTML('beforeend', CREATEBLOCK());
 
-export const showCreateDisplay = TASKLIST => {
-	// Удаляем предыдущую форму, если есть
-	const oldBlur = document.getElementById('blur')
-	if (oldBlur) oldBlur.remove()
+    setTimeout(() => {
+        const form = document.getElementById('createForm');
+        if (!form) return;
 
-	document.body.insertAdjacentHTML('beforeend', CREATEBLOCK())
+        form.addEventListener('submit', event => {
+            event.preventDefault();
+            const newTask = transformFormData(new FormData(form));
+            if (checkNPushNewTask(newTask)) {
+                displayElem(-1);
+                form.remove();
+                window.render?.();
+                window.selectFullView?.(TASKLIST.length - 1);
+            }
+        });
 
-	// Даем время на рендеринг DOM
-	setTimeout(() => {
-		const form = document.getElementById('createForm')
-		if (!form) return
-
-		form.addEventListener('submit', event => {
-			event.preventDefault()
-			const formData = new FormData(form)
-			const newTask = transformFormData(formData)
-			checkNPushNewTask(newTask)
-			displayElem(-1)
-			form.closest('#blur')?.remove()
-		})
-
-		setupAutofill()
-		setupEscapeButton()
-		displayElem(1)
-	}, 50)
-}
+        setupAutofill();
+        setupEscapeButton();
+        displayElem(1);
+        form.querySelector('input')?.focus();
+    }, 50);
+};
 
 export const showEditDisplay = (taskData, taskIndex) => {
-	// Удаляем предыдущую форму, если есть
-	const oldBlur = document.getElementById('blur')
-	if (oldBlur) oldBlur.remove()
+    const oldBlur = document.getElementById('blur');
+    if (oldBlur) oldBlur.remove();
 
-	document.body.insertAdjacentHTML('beforeend', CREATEBLOCK(taskData))
+    document.body.insertAdjacentHTML('beforeend', CREATEBLOCK(taskData));
 
-	// Даем время на рендеринг DOM
-	setTimeout(() => {
-		const form = document.getElementById('createForm')
-		if (!form) return
+    setTimeout(() => {
+        const form = document.getElementById('createForm');
+        if (!form) return;
 
-		form.addEventListener('submit', event => {
-			event.preventDefault()
-			const formData = new FormData(form)
-			const editedTask = transformFormData(formData)
+        form.addEventListener('submit', event => {
+            event.preventDefault();
+            const editedTask = transformFormData(new FormData(form));
+            if (window.replaceTask?.(editedTask, taskIndex)) {
+                displayElem(-1);
+                form.remove();
+                window.render?.();
+            }
+        });
 
-			// Сохраняем системные флаги
-			editedTask[6] = taskData[6] // fullview
-			editedTask[7] = taskData[7] // completed
+        setupAutofill();
+        setupEscapeButton();
+        displayElem(1);
+    }, 50);
+};
 
-			if (replaceTask(editedTask, taskIndex)) {
-				displayElem(-1)
-				form.closest('#blur')?.remove()
-			}
-		})
-
-		setupAutofill()
-		setupEscapeButton()
-		displayElem(1)
-	}, 50)
+function transformFormData(formData) {
+    const getValue = name => formData.get(name) || '';
+    return [
+        getValue('task-name') || 'Без названия',
+        (getValue('task-description') || '').replace(/\r?\n/g, '<br>'),
+        `${getValue('deadline-time')} ${getValue('deadline-date')}`.trim() || 'не указан',
+        getValue('urgency-select') === 'Срочно',
+        getValue('importance-select') === 'Важно',
+        getValue('task-category') || 'Без категории',
+        false, // fullview
+        false, // completed
+        getValue('deadline-time'),
+        getValue('deadline-date'),
+        getValue('end-time'),
+        getValue('end-date'),
+        getValue('start-time'),
+        getValue('start-date')
+    ];
 }
 
-// Вспомогательные функции
 function setupAutofill() {
-	const deadLineTime = document.getElementById('deadline-time')
-	const deadLineDate = document.getElementById('deadline-date')
-	const endDateTime = document.getElementById('end-time')
-	const endDateDate = document.getElementById('end-date')
+    const timePairs = [
+        ['deadline-time', 'end-time'],
+        ['deadline-date', 'end-date']
+    ];
 
-	const autofill = (target, source) => {
-		if (target && source) target.value = source.value
-	}
-
-	if (deadLineTime && endDateTime) {
-		deadLineTime.addEventListener('input', () =>
-			autofill(endDateTime, deadLineTime)
-		)
-	}
-	if (deadLineDate && endDateDate) {
-		deadLineDate.addEventListener('input', () =>
-			autofill(endDateDate, deadLineDate)
-		)
-	}
-	if (endDateDate && deadLineDate) {
-		endDateDate.addEventListener('input', () =>
-			autofill(deadLineDate, endDateDate)
-		)
-	}
-	if (endDateTime && deadLineTime) {
-		endDateTime.addEventListener('input', () =>
-			autofill(deadLineTime, endDateTime)
-		)
-	}
+    timePairs.forEach(([source, target]) => {
+        const sourceElem = document.getElementById(source);
+        const targetElem = document.getElementById(target);
+        if (sourceElem && targetElem) {
+            sourceElem.addEventListener('input', () => {
+                targetElem.value = sourceElem.value;
+            });
+        }
+    });
 }
 
 function setupEscapeButton() {
-	const escapeButton = document.getElementById('escape-button')
-	if (escapeButton) {
-		escapeButton.addEventListener('click', () => {
-			displayElem(-1)
-			document.getElementById('blur')?.remove()
-		})
-	}
+    const escapeButton = document.getElementById('escape-button');
+    if (escapeButton) {
+        escapeButton.addEventListener('click', () => {
+            displayElem(-1);
+            document.getElementById('blur')?.remove();
+        });
+    }
 }

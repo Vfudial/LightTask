@@ -1,124 +1,163 @@
+/* full-task.css - обновленная версия */
+:root {
+  --ft-bg: #424242;
+  --ft-border: #616161;
+  --ft-text: #ffffff;
+  --ft-panel-bg: #535353;
+  --ft-accent: #4a90e2;
+  --ft-urgent: #f44336;
+  --ft-normal: #4caf50;
+  --ft-category: #0f2d69;
+}
+
 #fulltask-block {
-	display: flex;
-	width: 53vw;
-	height: 95vh;
-	margin-bottom: 3px;
-	background: rgba(158, 158, 158, 0.38);
-	position: relative;
+  width: 53vw;
+  height: 95vh;
+  background: rgba(66, 66, 66, 0.9);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
+
 .fulltask-head {
-	text-align: center;
-	border: solid 1px black;
-	height: 8%;
-	padding: 2% 5px;
-	background-color: #d9d9d9;
+  padding: 12px;
+  background: var(--ft-panel-bg);
+  border-bottom: 1px solid var(--ft-border);
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 500;
+  flex-shrink: 0;
 }
+.fulltask-head h3 {
+  color: var(--ft-text);
+}
+
 .fulltask-inside-container {
-	height: 98%;
-	width: 98%;
-	border: solid 1px black;
-	margin: 5px auto 0 auto;
-	padding: 2px;
-	background-color: #808080;
+  flex: 1;
+  margin: 8px;
+  background: var(--ft-bg);
+  border: 1px solid var(--ft-border);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
+
 .fulltask-body {
-	height: 84%;
-	margin: 5px 0;
-	border: solid 1px black;
-	background-color: #d9d9d9;
-	padding: 5px 5px 0 5px;
-	overflow-x: hidden;
-	overflow-y: scroll;
+  flex: 1;
+  padding: 15px;
+  margin: 8px;
+  background: var(--ft-panel-bg);
+  border: 1px solid var(--ft-border);
+  border-radius: 4px;
+  overflow-y: auto;
+  color: var(--ft-text);
+  line-height: 1.5;
 }
+
 .fulltask-body p {
-	text-align: justify;
-	max-width: 100%;
-	word-wrap: break-word;
-	max-height: 100%;
-}
-.urgency,
-.importance {
-	color: white;
-	width: 15%;
-	text-align: center;
-	font-size: 0.9rem;
-	padding: 1.5% 0;
-	border: solid 1px black;
-}
-.urgency.high {
-	background-color: red;
+  text-align: justify;
+  word-wrap: break-word;
+  margin: 0;
+  white-space: pre-wrap;
 }
 
-.urgency.low {
-	background-color: green;
-}
-
-.importance.high {
-	background-color: red;
-}
-
-.importance.low {
-	background-color: green;
-}
 .fulltask-footer {
-	height: 6%;
-	width: 100%;
-	margin: 0 auto;
-	display: inline-flex;
-	justify-content: space-between;
-	position: relative;
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  background: var(--ft-panel-bg);
+  border-top: 1px solid var(--ft-border);
+  gap: 10px;
 }
+
 .fulltask-footer .deadline {
-	padding: 1.5%;
+  flex: 2;
+  text-align: center;
+  padding: 8px;
+  background: var(--ft-bg);
+  border-radius: 4px;
+  color: var(--ft-text);
+  font-size: 0.9rem;
 }
-.fulltask-footer div:first-child {
-	border: solid 1px black;
-	width: 40%;
-	background-color: #d9d9d9;
-	text-align: center;
-	height: 100%;
-	margin: auto 0;
+
+.urgency, .importance {
+  flex: 1;
+  text-align: center;
+  padding: 8px;
+  border-radius: 4px;
+  color: white;
+  font-weight: 500;
+  font-size: 0.9rem;
 }
+
+.urgency.high, .importance.high {
+  background: var(--ft-urgent);
+}
+
+.urgency.low, .importance.low {
+  background: var(--ft-normal);
+}
+
 .fulltask-footer .category {
-	display: inline-block;
-	width: 13%;
-	font-size: 0.9rem;
-	text-align: center;
-	padding: 0 0;
+  flex: 1;
+  min-width: 100px;
 }
-.fulltask-footer .category p {
-	display: inline-block;
-	width: 90%;
-	height: 50%;
-	background-color: #0f2d69;
-	color: #ffffff;
-	border: solid 1px black;
-	margin-left: 3px;
-	font-size: 0.8rem;
-	padding: 1%;
+
+.category p {
+  background: var(--ft-category);
+  color: white;
+  padding: 6px;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 0.8rem;
+  margin: 0;
 }
-.fulltask-footer .category span {
-	display: inline-block;
-	color: #ffffff;
+
+#button-delete {
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.fulltask-footer #button-delete {
-	width: 4%;
-	height: 60%;
-	padding: 1% 0;
-	margin: 15px 5px 0 0;
-	background-color: rgba(0, 0, 0, 0);
-	overflow: hidden;
-	position: relative;
-	transition: all 0.5s ease;
+
+#button-delete:hover {
+  transform: scale(1.1);
 }
-.fulltask-footer #button-delete img {
-	width: 110%;
-	position: absolute;
-	border-radius: 2px;
-	left: -2px;
-	top: -2px;
+
+#button-delete img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
-.fulltask-footer #button-delete:hover {
-	cursor: pointer;
-	background-color: rgba(0, 0, 0, 0.163);
+
+/* Полоса прокрутки */
+.fulltask-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.fulltask-body::-webkit-scrollbar-thumb {
+  background: var(--ft-border);
+  border-radius: 4px;
+}
+
+.fulltask-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Анимации */
+#fulltask-block {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+#button-delete {
+  transition: all 0.3s ease;
 }

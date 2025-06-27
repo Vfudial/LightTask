@@ -1,114 +1,159 @@
+:root {
+--bg-main: #121212;
+--bg-secondary: #1e1e1e;
+--bg-tertiary: #252525;
+--border-dark: #333333;
+--accent-color: #4a90e2;
+--accent-green: #4caf50;
+--text-main: #bdbdbd;
+--text-secondary: #2e2e2e;
+--filter-bg: var(--bg-secondary);
+--filter-option-hover: var(--bg-input);
+--filter-border: var(--border-dark);
+}
+
 * {
-	box-sizing: border-box;
-	margin: 0;
-	padding: 0;
-	border-radius: 10px;
+box-sizing: border-box;
+margin: 0;
+padding: 0;
 }
 
 body {
-	background-size: cover;
-	overflow: hidden;
+font-family: 'Segoe UI', system-ui, sans-serif;
+background-color: var(--bg-main);
+color: var(--text-main);
+height: 100vh;
+overflow: hidden;
+display: flex;
+flex-direction: column;
 }
 
 .wrapper {
-	padding: 10px;
+padding: 12px;
+height: 100%;
+display: flex;
+flex-direction: column;
+gap: 12px;
 }
 
+h3 {
+    color: var(--text-secondary);
+}
 header {
-	height: 5vh;
-	width: 100%;
-	background: #000;
-	border-radius: 10px;
+height: 48px;
+background: var(--bg-secondary);
+border-radius: 6px;
+display: flex;
+align-items: center;
+padding: 0 16px;
+gap: 10px;
 }
 
 header button {
-	border: none;
-	outline: none;
-	background-color: #fff;
-	border-radius: 10px;
-	width: 10%;
-	height: 80%;
-	transition: 0.2s ease;
-	margin: 0.5vh 1vh;
+background: var(--accent-color);
+color: white;
+border: none;
+border-radius: 4px;
+padding: 6px 12px;
+font-size: 13px;
+cursor: pointer;
 }
 
-header button:hover,
-main .btn:not(.white):hover {
-	background-color: rgba(49, 126, 67, 0.56);
-}
-
-header button:active,
-main .btn:not(.white):active {
-	background-color: rgba(29, 80, 53, 0.56);
-}
-
-/* MAIN */
 main {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	width: 100%;
-	height: 95vh;
+flex: 1;
+display: flex;
+gap: 12px;
+min-height: 0;
+overflow: hidden;
 }
 
-main .btn {
-	border: none;
-	outline: none;
-	background-color: #d9d9d9;
-	border-radius: 10px;
-	margin: 10px 5px;
-	padding: 5px;
-	width: 35%;
-	height: 5vh;
-	transition: 0.2s ease;
-	color: black;
+#task-box {
+flex: 0 0 45%;
+background: var(--bg-secondary);
+border-radius: 6px;
+border: 1px solid var(--border-dark);
+display: flex;
+flex-direction: column;
+position: relative;
 }
 
-.block-name {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	height: 10%;
-
-	color: #000000;
+#tasks {
+flex: 1;
+overflow-y: auto;
+padding: 12px;
 }
 
-.wrapper #task-box {
-	display: flex;
-	width: 45%;
-	height: 93vh;
-	margin: 0 10px 10px 0;
-	background-color: #262626;
-	position: relative;
+#empty-tasks {
+color: var(--text-secondary);
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
 }
 
-main #tasks {
-	color: #000000;
-	overflow-y: scroll;
-	overflow-x: hidden;
-	padding-bottom: 10.5%;
-	width: 100%;
-}
-main #tasks #empty-tasks {
-	color: #fff;
-	position: relative;
-	top: 50%;
-	left: 50%;
-	transform: translate(-10%, -50%);
+#fulltask-container {
+    flex: 1;
+    background: var(--bg-secondary);
+    border-radius: 6px;
+    border: 1px solid var(--border-dark);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
-.wrapper .task-tools {
-	display: flex;
-	justify-content: space-between;
-	width: 100%;
-	height: 7vh;
-	background-color: #000000;
-	position: absolute;
-	z-index: 2;
-	bottom: 0px;
+#fulltask-container > * {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
 }
 
-#filter-menu {
-	position: absolute;
+#fulltask-container {
+    overflow-x: hidden;
+}
+
+.task-tools {
+display: flex;
+justify-content: flex-end;
+align-items: center;
+height: 48px;
+background: var(--bg-tertiary);
+border-top: 1px solid var(--border-dark);
+padding: 0 16px;
+}
+
+.task-tools .btn {
+background: var(--accent-green);
+color: white;
+border: none;
+border-radius: 4px;
+padding: 8px 16px;
+font-size: 14px;
+cursor: pointer;
+transition: background 0.2s;
+}
+
+.task-tools .btn:hover {
+background: #3e8e41;
+}
+
+::-webkit-scrollbar {
+width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+background: #444;
+border-radius: 4px;
+}
+
+::-webkit-scrollbar-track {
+background: transparent;
+}
+
+html, body {
+overflow-x: hidden;
+}
+
+#fulltask-container > * {
+max-width: 100%;
+overflow-x: hidden;
 }

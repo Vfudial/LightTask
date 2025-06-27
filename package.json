@@ -33,12 +33,13 @@
 		"electron-squirrel-startup": "^1.0.1"
 	},
 	"devDependencies": {
-		"@electron-forge/cli": "^7.8.0",
-		"@electron-forge/maker-deb": "^7.8.0",
-		"@electron-forge/maker-rpm": "^7.8.0",
-		"@electron-forge/maker-squirrel": "^7.8.0",
-		"@electron-forge/maker-zip": "^7.8.0",
-		"electron": "^28.1.0",
+		"@electron-forge/cli": "^7.8.1",
+		"@electron-forge/maker-deb": "^7.8.1",
+		"@electron-forge/maker-rpm": "^7.8.1",
+		"@electron-forge/maker-squirrel": "^7.8.1",
+		"@electron-forge/maker-zip": "^7.8.1",
+		"@electron-forge/plugin-auto-unpack-natives": "^7.8.1",
+		"electron": "^37.1.0",
 		"electron-builder": "^24.13.3"
 	},
 	"build": {
@@ -55,12 +56,14 @@
 				"zip"
 			]
 		},
+		
 		"win": {
-			"icon": "build/icons/icon.ico",
-			"target": [
-				"nsis",
-				"portable"
-			]
+		"rfc3161TimeStampServer": "http://timestamp.digicert.com",
+		"icon": "build/icons/icon.ico",
+		"target": [
+			"nsis",
+			"portable"
+		]
 		},
 		"linux": {
 			"icon": "build/icons/icon.png",

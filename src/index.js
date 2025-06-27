@@ -21,8 +21,6 @@ const createWindow = () => {
 		},
 	})
 	mainWindow.loadFile(path.join(__dirname, 'main-menu/index.html'))
-
-	mainWindow.webContents.openDevTools()
 }
 
 async function loadTaskList() {

@@ -1,205 +1,151 @@
-/* CREATE */
 #blur {
-	position: fixed;
-	top: 0;
-	left: 0;
-	display: none;
-	z-index: -1;
-	height: 100%;
-	width: 100%;
-	background-color: rgba(0, 0, 0, 0.4);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: none;
 }
 
 #createForm {
-	position: fixed;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	width: 50%;
-	background-color: #808080;
-	border: dashed 2px black;
-	padding: 20px;
-	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-	opacity: 0;
-	z-index: -1;
-}
-
-#createForm:not([style*='none']) {
-	animation: fadeIn 0.4s ease-out forwards;
-	z-index: 1000;
-}
-
-@keyframes fadeIn {
-	from {
-		opacity: 0;
-		transform: translate(-50%, -55%);
-	}
-	to {
-		opacity: 1;
-		transform: translate(-50%, -50%);
-	}
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50%;
+  min-width: 400px;
+  max-width: 600px;
+  background: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 20px;
+  z-index: 1001;
+  color: white;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
 #create-wrapper {
-	padding: 10px;
-	display: flex;
-	flex-direction: column;
-	gap: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
-/* Desk Section */
+/* Секция с полями ввода */
 #desk {
-	height: 30vh;
-	display: flex;
-	flex-direction: column;
-	gap: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
 #top-desk {
-	display: flex;
-	gap: 15px;
+  display: flex;
+  gap: 15px;
 }
 
 #top-desk input {
-	flex: 1;
-	width: 90%;
-	padding: 12px;
-	font-size: 16px;
-	background-color: rgba(255, 255, 255, 0.8);
-	border: none;
-	transition: all 0.3s;
-}
-
-#top-desk input:hover {
-	background-color: white;
-	box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+  flex: 1;
+  padding: 10px;
+  background: #2d2d2d;
+  border: 1px solid #444;
+  border-radius: 4px;
+  color: white;
 }
 
 #task-description {
-	flex: 1;
-	padding: 12px;
-	font-size: 16px;
-	resize: none;
-	background-color: rgba(255, 255, 255, 0.8);
-	border: none;
-	transition: all 0.3s;
+  min-height: 120px;
+  padding: 10px;
+  background: #2d2d2d;
+  border: 1px solid #444;
+  border-radius: 4px;
+  resize: vertical;
+  color: white;
 }
 
-#task-description:hover {
-	background-color: white;
-	box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
-}
-
-/* DateTime Block */
+/* Блок даты/времени */
 .datetime-block {
-	background-color: rgba(255, 255, 255, 0.1);
-	padding: 15px;
+  background: #252525;
+  padding: 15px;
+  border-radius: 6px;
 }
 
 #datetime-table {
-	width: 100%;
-	border-collapse: separate;
-	border-spacing: 0 10px;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 10px;
 }
 
 #datetime-table td {
-	padding: 5px 0;
+  padding: 5px 0;
+  color: white;
 }
 
 #datetime-table td:first-child {
-	width: 25%;
+  width: 30%;
 }
 
 #datetime-table input {
-	width: 100%;
-	padding: 8px;
-	background-color: rgba(255, 255, 255, 0.8);
-	border: none;
+  width: 100%;
+  padding: 8px;
+  background: #2d2d2d;
+  border: 1px solid #444;
+  border-radius: 4px;
+  color: white;
 }
 
-#datetime-table input:hover {
-	background-color: white;
-}
-
-#datetime-table h5 {
-	color: #fff;
-	font-size: 16px;
-	margin: 0;
-	font-weight: normal;
-}
-
-/* Urgency/Importance Block */
+/* Блок срочности/важности */
 .urg-imp-block {
-	display: flex;
-	justify-content: center;
-	gap: 30px;
-	padding: 15px 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 10px 0;
 }
 
 .urg-imp-block select {
-	padding: 10px 15px;
-	font-size: 16px;
-	background-color: rgba(255, 255, 255, 0.8);
-	border: none;
-	cursor: pointer;
-	transition: all 0.3s;
+  flex: 1;
+  padding: 8px 12px;
+  background: #2d2d2d;
+  border: 1px solid #444;
+  border-radius: 4px;
+  color: white;
 }
 
-.urg-imp-block select:hover {
-	background-color: white;
-	box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
-}
-
-/* Buttons */
+/* Кнопки */
 #submit-out-block {
-	display: flex;
-	justify-content: center;
-	gap: 30px;
-	padding-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  padding-top: 10px;
 }
 
-#form-submit,
-#escape-button {
-	padding: 12px 30px;
-	font-size: 16px;
-	border: none;
-	border-radius: 4px;
-	cursor: pointer;
-	transition: all 0.3s;
+#form-submit, #escape-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
 }
 
 #form-submit {
-	background-color: greenyellow;
-}
-
-#form-submit:hover {
-	background-color: #a2ff00;
-	transform: translateY(-2px);
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background: #4CAF50;
+  color: white;
 }
 
 #escape-button {
-	background-color: #ff4747;
-	color: white;
+  background: #f44336;
+  color: white;
 }
 
-#escape-button:hover {
-	background-color: #e63939;
-	transform: translateY(-2px);
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+/* Состояния */
+input:focus, textarea:focus, select:focus {
+  outline: 2px solid #4a90e2;
+  outline-offset: 2px;
 }
 
-/* Validation */
-input[required],
-select[required],
-textarea[required] {
-	border-left: 2px solid #ff5252;
-	border-right: 2px solid #ff5252;
-}
-
-input:focus,
-textarea:focus,
-select:focus {
-	outline: 2px solid #4caf50;
-	background-color: white !important;
+::placeholder {
+  color: #b0b0b0;
+  opacity: 1;
 }

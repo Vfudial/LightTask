@@ -7,8 +7,8 @@ export const FILTER_MENU = () => `
       <!-- Категории будут добавлены динамически -->
     </div>
     <div class="filter-buttons">
-      <button id="apply-filter">Применить</button>
-      <button id="cancel-filter">Отмена</button>
+      <button id="apply-filter" class="filter-btn apply-btn">Применить</button>
+      <button id="cancel-filter" class="filter-btn cancel-btn">Отмена</button>
     </div>
   </div>
-`
+`;
