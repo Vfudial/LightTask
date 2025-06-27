@@ -58,12 +58,13 @@
 		},
 		
 		"win": {
-		"rfc3161TimeStampServer": "http://timestamp.digicert.com",
-		"icon": "build/icons/icon.ico",
-		"target": [
-			"nsis",
-			"portable"
-		]
+			"requestedExecutionLevel": "asInvoker",
+			"rfc3161TimeStampServer": "http://timestamp.digicert.com",
+			"icon": "build/icons/icon.ico",
+			"target": [
+				"nsis",
+				"portable"
+			]
 		},
 		"linux": {
 			"icon": "build/icons/icon.png",
@@ -78,11 +79,15 @@
 			"**/*",
 			"!node_modules/{@types,.cache}"
 		],
-		"extraResources": [
-			{
-				"from": "assets",
-				"to": "assets"
+		  "nsis": {
+			"oneClick": false,
+			"allowToChangeInstallationDirectory": true,
+			"perMachine": true,
+			"allowElevation": true,
+			"installerIcon": "build/icons/icon.ico",
+			"uninstallerIcon": "build/icons/icon.ico",
+			"createDesktopShortcut": true,
+			"createStartMenuShortcut": true
 			}
-		]
 	}
 }
